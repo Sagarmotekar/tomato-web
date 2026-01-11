@@ -1,38 +1,44 @@
-import express from 'express';
-import cors from 'cors';
-import { connectDB } from './config/db.js';
-import foodRouter from './routes/foodRoute.js';
-import userRouter from './routes/userRoute.js';
-import 'dotenv/config'
-import CartRouter from './routes/cartRoute.js';
-import orderRouter from './routes/orderRoute.js';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
 
+import foodRouter from "./routes/foodRoute.js";
+import userRouter from "./routes/userRoute.js";
+import cartRouter from "./routes/cartRoute.js";
+import orderRouter from "./routes/orderRoute.js";
+
+dotenv.config();
 
 // app config
 const app = express();
-const port = 4000;
+const PORT = process.env.PORT || 5000;
 
-//middlewares
+// middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // TEMP: allow all (fix later)
+    credentials: true
+  })
+);
 
-//db connection 
+// database connection
 connectDB();
 
-//api endpoints
-app.use("/api/food",foodRouter)
-app.use("/images",express.static("uploads"))
-app.use("/api/user",userRouter)
-app.use("/api/cart",CartRouter)
-app.use("/api/order",orderRouter)
+// api routes
+app.use("/api/food", foodRouter);
+app.use("/api/user", userRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
 
+// ❌ uploads folder is NOT reliable on Render
+// app.use("/images", express.static("uploads"));
 
-app.get("/",(req,res)=>{
-    res.send("API is running...");
-})
+app.get("/", (req, res) => {
+  res.send("Backend API is running successfully 🚀");
+});
 
-app.listen(port,()=>{
-    console.log(`server is running on http://localhost:${port}`);
-})  
-
-//mongodb+srv://sagar2004:<db_password>@sagarfirst.nfa023p.mongodb.net/?appName=sagarfirst
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
