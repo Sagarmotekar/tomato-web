@@ -20,6 +20,17 @@ const addFood = async (req, res) => {
         .json({ success: false, message: "Food image is required" });
     }
 
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const food = await foodModel.create({
+      name,
+      description,
+      price,
+      category,
+      image: result.secure_url,
+    });
+    return res.status(201).json({ success: true, food });
+    }
+
     // Upload image to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "food_images",
