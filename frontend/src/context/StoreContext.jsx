@@ -49,13 +49,10 @@ const StoreContextProvider = (props) => {
     const fetchFoodList = async () => {
         try {
             const response = await axios.get(`${url}/api/food/list`);
+            console.log('API Response:', response.data);
             if (response.data.success) {
-                // Use the full Cloudinary image URL directly
-                const foodsWithUrl = response.data.data.map(item => ({
-                    ...item,
-                    image: item.image // Already Cloudinary URL
-                }));
-                setFoodList(foodsWithUrl);
+                console.log('Food data received:', response.data.data);
+                setFoodList(response.data.data);
             }
         } catch (error) {
             console.error("Error fetching food list:", error);
