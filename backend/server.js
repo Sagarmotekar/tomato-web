@@ -2,41 +2,40 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
+import multer from "multer"; // for image uploads
 
+// Import routes
 import foodRouter from "./routes/foodRoute.js";
 import userRouter from "./routes/userRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 
 dotenv.config();
+connectDB();
 
-// app config
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// middlewares
+// Middlewares
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*", // TEMP: allow all (fix later)
-    credentials: true
-  })
-);
+app.use(cors({
+  origin: process.env.FRONTEND_URL, // allow your frontend
+  credentials: true
+}));
 
-// database connection
-connectDB();
+// For file uploads
+const storage = multer.diskStorage({});
+const upload = multer({ storage });
 
-// api routes
-app.use("/api/food", foodRouter);
+// Routes
+app.use("/api/food", foodRouter(upload)); // pass upload middleware
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-// ❌ uploads folder is NOT reliable on Render
-// app.use("/images", express.static("uploads"));
-
+// Test API
 app.get("/", (req, res) => {
-  res.send("Backend API is running successfully 🚀");
+  res.send("Backend API is running 🚀");
 });
 
 app.listen(PORT, () => {
